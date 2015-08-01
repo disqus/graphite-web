@@ -86,7 +86,10 @@ def search_view(request):
 
 def find_view(request):
   "View for finding metrics matching a given pattern"
-  profile = getProfile(request)
+  if request.user.is_authenticated():
+    advancedUI = getProfile(request).advancedUI
+  else:
+    advancedUI = False
   format = request.REQUEST.get('format', 'treejson')
   local_only = int( request.REQUEST.get('local', 0) )
   wildcards = int( request.REQUEST.get('wildcards', 0) )
@@ -135,7 +138,7 @@ def find_view(request):
   log.info("received remote find request: pattern=%s from=%s until=%s local_only=%s format=%s matches=%d" % (query, fromTime, untilTime, local_only, format, len(matches)))
 
   if format == 'treejson':
-    content = tree_json(matches, base_path, wildcards=profile.advancedUI or wildcards)
+    content = tree_json(matches, base_path, wildcards=advancedUI or wildcards)
     response = json_response_for(request, content)
 
   elif format == 'pickle':
