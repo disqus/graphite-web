@@ -125,7 +125,10 @@ def context_view(request):
 
 def find_view(request):
   "View for finding metrics matching a given pattern"
-  profile = getProfile(request)
+  if request.user.is_authenticated():
+    advancedUI = getProfile(request).advancedUI
+  else:
+    advancedUI = False
   format = request.REQUEST.get('format', 'treejson')
   local_only = int( request.REQUEST.get('local', 0) )
   contexts = int( request.REQUEST.get('contexts', 0) )
@@ -170,7 +173,7 @@ def find_view(request):
   matches.sort(key=lambda node: node.name)
 
   if format == 'treejson':
-    content = tree_json(matches, base_path, wildcards=profile.advancedUI or wildcards, contexts=contexts)
+    content = tree_json(matches, base_path, wildcards=advancedUI or wildcards, contexts=contexts)
     response = json_response_for(request, content)
 
   elif format == 'pickle':
