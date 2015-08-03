@@ -123,6 +123,7 @@ class RemoteNode:
       targets = [ ('target', self.metric_path) ]
 
     query_params = [
+      ('noCache', '1'),
       ('local', '1'),
       ('format', 'pickle'),
       ('from', str( int(startTime) )),
